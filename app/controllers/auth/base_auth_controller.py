@@ -100,7 +100,7 @@ class BaseAuthController:
         userSessionId = sha256(token.encode('utf-8'),usedforsecurity=True).hexdigest()
         expires_at = datetime.now() + timedelta(days=30)
         session_data = {
-            "id_client":UserId,
+            "id_user":UserId,
             "session":userSessionId,
             "expires_at":math.floor(expires_at.timestamp())
         }
@@ -131,7 +131,6 @@ class BaseAuthController:
             "session":None,
             "user":None
         }
-        
         sessionJson = _query.get_json(True)
         expiration_Date = datetime.fromtimestamp(sessionJson["expires_at"])
         if datetime.now() >= expiration_Date:
@@ -143,6 +142,7 @@ class BaseAuthController:
                 "user":None
             }
         
+        
         if datetime.now() >= (expiration_Date - timedelta(days=-15)):
             # si es menor a 15 dias
             new_expires_at = datetime.now() + timedelta(days=30)
@@ -150,12 +150,12 @@ class BaseAuthController:
             self.session.merge(_query)
             self.session.flush()
             self.session.commit()
+
+        id_user = sessionJson["user"]["id"]
+        sessionData["user"] = sessionJson["user"]
         
-        id_user = sessionJson["client"]["id"]
-        sessionData["user"] = sessionJson["client"]
-        
-        del sessionJson["client"]
-        sessionJson["id_client"] = id_user
+        del sessionJson["user"]
+        sessionJson["id_user"] = id_user
         sessionData["session"] = sessionJson
         return Response(response=json.dumps(sessionData),status=200,mimetype="application/json")
 
