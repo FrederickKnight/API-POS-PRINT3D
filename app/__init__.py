@@ -14,20 +14,23 @@ migrate = Migrate()
 bcrypt = Bcrypt()
 cors = CORS()
 
-upload_folder = os.path.join(os.getcwd(), 'static', 'uploads')
+basedir = os.path.abspath(os.path.dirname(__file__))
+if os.name == 'nt':  # Windows
+    upload_folder = os.path.abspath(os.path.join(basedir, '..', 'static', 'uploads'))
+else:  # Linux 
+    upload_folder = os.getenv("UPLOAD_FOLDER") or "/var/www/flask_api/uploads"
+
+app = Flask(__name__)
 
 def create_app():
     
     if os.environ.get("DB_URL") is None:
         load_dotenv()
 
-    app = Flask(__name__)
     register_error_handlers(app)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URL")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-    os.makedirs(upload_folder, exist_ok=True)
     app.config['UPLOAD_FOLDER'] = upload_folder
 
     db.init_app(app)
