@@ -14,17 +14,24 @@ migrate = Migrate()
 bcrypt = Bcrypt()
 cors = CORS()
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+if os.name == 'nt':  # Windows
+    upload_folder = os.path.abspath(os.path.join(basedir, '..', 'static', 'uploads'))
+else:  # Linux 
+    upload_folder = os.getenv("UPLOAD_FOLDER") or "/var/www/flask_api/uploads"
+
+app = Flask(__name__)
+
 def create_app():
     
     if os.environ.get("DB_URL") is None:
         load_dotenv()
 
-    app = Flask(__name__)
     register_error_handlers(app)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URL")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = 'static/uploads'
+    app.config['UPLOAD_FOLDER'] = upload_folder
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -55,6 +62,8 @@ def define_routes(app):
         MaterialInventoryRoute,
         InventoryRoute,
         PrintModelRoute,
+        BrandModelRoute,
+        SetModelRoute,
         GeneralPricesRoute,
         TicketRoute,
         SalesRoute,
@@ -77,6 +86,8 @@ def define_routes(app):
     app.register_blueprint(InventoryRoute().get_blueprint(),url_prefix="/api/inventory/")
 
     app.register_blueprint(PrintModelRoute().get_blueprint(),url_prefix="/api/print-model/")
+    app.register_blueprint(BrandModelRoute().get_blueprint(),url_prefix="/api/brand-model/")
+    app.register_blueprint(SetModelRoute().get_blueprint(),url_prefix="/api/set-model/")
 
     app.register_blueprint(GeneralPricesRoute().get_blueprint(),url_prefix="/api/general-price/")
     app.register_blueprint(TicketRoute().get_blueprint(),url_prefix="/api/ticket/")

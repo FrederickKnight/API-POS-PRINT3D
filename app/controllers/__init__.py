@@ -8,6 +8,8 @@ from .theme.subtheme_controller import SubthemeController
 from .inventory.material_inventory_controller import MaterialInventoryController
 from .inventory.inventory_controller import InventoryController
 from .print.print_model_controller import PrintModelController
+from .print.brand_model_controller import BrandModelController
+from .print.set_model_controller import SetModelController
 from .selling.general_prices_controller import GeneralPricesController
 from .selling.ticket_controller import TicketController
 from .selling.sales_controller import SalesController

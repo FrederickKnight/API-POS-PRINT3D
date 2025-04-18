@@ -23,3 +23,7 @@ class VersionError(AppError):
 class InvalidIDError(AppError):
     def __init__(self, details: str = "Expected a number/interger id"):
         super().__init__("Invalid ID Error", "Invalid ID provided", details)
+
+class InvalidFile(AppError):
+    def __init__(self, details: str = "Expected a valid file"):
+        super().__init__("Invalid file", "Invalid File provided, or not File at all", details)
