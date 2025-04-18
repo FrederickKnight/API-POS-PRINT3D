@@ -16,9 +16,7 @@ cors = CORS()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 if os.name == 'nt':  # Windows
-    upload_folder = os.path.abspath(os.path.join(basedir, '..', 'static', 'uploads'))
-else:  # Linux 
-    upload_folder = os.getenv("UPLOAD_FOLDER") or "/var/www/flask_api/uploads"
+    upload_folder = os.path.abspath(os.path.join(basedir, '.','static', 'uploads'))
 
 app = Flask(__name__)
 
