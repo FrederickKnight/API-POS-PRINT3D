@@ -14,6 +14,8 @@ migrate = Migrate()
 bcrypt = Bcrypt()
 cors = CORS()
 
+upload_folder = os.path.join(os.getcwd(), 'static', 'uploads')
+
 def create_app():
     
     if os.environ.get("DB_URL") is None:
@@ -24,7 +26,9 @@ def create_app():
 
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DB_URL")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+    os.makedirs(upload_folder, exist_ok=True)
+    app.config['UPLOAD_FOLDER'] = upload_folder
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -55,6 +59,8 @@ def define_routes(app):
         MaterialInventoryRoute,
         InventoryRoute,
         PrintModelRoute,
+        BrandModelRoute,
+        SetModelRoute,
         GeneralPricesRoute,
         TicketRoute,
         SalesRoute,
@@ -77,6 +83,8 @@ def define_routes(app):
     app.register_blueprint(InventoryRoute().get_blueprint(),url_prefix="/api/inventory/")
 
     app.register_blueprint(PrintModelRoute().get_blueprint(),url_prefix="/api/print-model/")
+    app.register_blueprint(BrandModelRoute().get_blueprint(),url_prefix="/api/brand-model/")
+    app.register_blueprint(SetModelRoute().get_blueprint(),url_prefix="/api/set-model/")
 
     app.register_blueprint(GeneralPricesRoute().get_blueprint(),url_prefix="/api/general-price/")
     app.register_blueprint(TicketRoute().get_blueprint(),url_prefix="/api/ticket/")

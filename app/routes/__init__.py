@@ -7,6 +7,8 @@ from .theme.subtheme_route import SubthemeRoute
 from .inventory.material_inventory_route import MaterialInventoryRoute
 from .inventory.inventory_route import InventoryRoute
 from .print.print_model_route import PrintModelRoute
+from .print.brand_model_route import BrandModelRoute
+from .print.set_model_route import SetModelRoute
 from .selling.general_prices_route import GeneralPricesRoute
 from .selling.ticket_route import TicketRoute
 from .selling.sales_route import SalesRoute
