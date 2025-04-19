@@ -20,7 +20,7 @@ class BaseController:
         
         
     def controller_get_all(self,request:Request):
-        
+
         version = request.headers.get("Accept")
         return self.__return_json__(self.__query_args__(request.args),version)
         

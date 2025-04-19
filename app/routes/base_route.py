@@ -11,27 +11,27 @@ class BaseRoute:
         
     def _create_routes(self):
         
-        @self._blueprint.route("/",methods=["GET"])
+        @self._blueprint.route("/",methods=["GET"],strict_slashes=False)
         def route_get_all():
             return self._controller.controller_get_all(request)
 
-        @self._blueprint.route("/",methods=["POST"])
+        @self._blueprint.route("/",methods=["POST","OPTIONS"],strict_slashes=False)
         def route_add():
             return self._controller.controller_register(request)
 
-        @self._blueprint.route("/",methods=["PUT"])
+        @self._blueprint.route("/",methods=["PUT","OPTIONS"],strict_slashes=False)
         def route_update():
             return self._controller.controller_update(request=request)
 
-        @self._blueprint.route("/<int:id>",methods=["PUT"])
+        @self._blueprint.route("/<int:id>",methods=["PUT"],strict_slashes=False)
         def route_update_by_id(id):
             return self._controller.controller_update(id=id,request=request)
 
-        @self._blueprint.route("/<int:id>",methods=["DELETE"])
+        @self._blueprint.route("/<int:id>",methods=["DELETE"],strict_slashes=False)
         def route_delete_by_id(id):
             return self._controller.controller_delete(id=id)
 
-        @self._blueprint.route("/<int:id>",methods=["GET"])
+        @self._blueprint.route("/<int:id>",methods=["GET"],strict_slashes=False)
         def route_get_by_id(id):
             return self._controller.controller_get_by_id(id=id,request=request)
         
