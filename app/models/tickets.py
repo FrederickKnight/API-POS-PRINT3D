@@ -82,6 +82,13 @@ def calculate_totals(mapper, connection, target:Sales):
     target.raw_total = float(raw_total)
     target.total = float(total)
 
+@event.listens_for(Sales, "after_update")
+def calculate_totals_when_update(mapper, connection, target:Sales):
+    raw_total = target.general_price.calculate_raw_total(target.material_quantity, target.print_time, target.risk)
+    total = target.general_price.calculate_total(target.material_quantity, target.print_time, target.discount, target.risk)
+
+    target.raw_total = float(raw_total)
+    target.total = float(total)
 
 class ErrorSale(BaseModel):
     id_sale:Mapped[int] = mapped_column(ForeignKey("sales.id"),unique=True)
