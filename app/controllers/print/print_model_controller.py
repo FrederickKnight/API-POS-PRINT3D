@@ -1,4 +1,4 @@
-from flask import Response,Request,json
+from flask import Response,Request,json,send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from pathlib import Path
@@ -44,6 +44,11 @@ class PrintModelController(BaseController):
             filepath = Path(app.config["UPLOAD_FOLDER"]) / "print_models" / filename
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             file.save(str(filepath))
-            return Response(response=json.dumps({"path":f"{str(filepath)}"}),status=201)
+            return Response(response=json.dumps({"name":f"{str(filename)}"}),status=201)
         
         return Response(status=402)
+    
+    def controller_get_file(self,filename):
+        filename = secure_filename(filename)
+        filepath = Path(app.config["UPLOAD_FOLDER"]) / "print_models"
+        return send_from_directory(filepath,filename)
