@@ -37,6 +37,7 @@ risk_type_enum = ENUM("low", "medium", "high", name="risk_type",create_type=True
 
 
 class Sales(BaseModel):
+    uuid:Mapped[Optional[str]] = mapped_column(default=None,unique=True)
     id_ticket:Mapped[int] = mapped_column(ForeignKey("ticket.id"))
     ticket:Mapped["Ticket"] = relationship("Ticket",back_populates="sales")
 
@@ -66,6 +67,21 @@ class Sales(BaseModel):
             return self.error_sale
         else:
             return None
+        
+@event.listens_for(Sales, "before_insert")
+def generate_uuid(mapper, connection, target:Sales):
+
+    session = Session(bind = connection)
+
+    while True:
+        generated_uuid = str(uuid.uuid4())
+
+        exist = session.query(Sales).filter_by(uuid = generate_uuid).first()
+            
+        if not exist:
+            target.uuid = generated_uuid
+            break
+
         
 @event.listens_for(Sales, "before_insert")
 def calculate_totals(mapper, connection, target:Sales):
@@ -124,8 +140,16 @@ class Ticket(BaseModel):
     
 @event.listens_for(Ticket, "before_insert")
 def generate_uuid(mapper, connection, target:Ticket):
-    generated_uuid = str(uuid.uuid4())
-    target.uuid = generated_uuid
+    session = Session(bind = connection)
+
+    while True:
+        generated_uuid = str(uuid.uuid4())
+
+        exist = session.query(Sales).filter_by(uuid = generate_uuid).first()
+            
+        if not exist:
+            target.uuid = generated_uuid
+            break
 
 
 @event.listens_for(Sales, "after_insert")
