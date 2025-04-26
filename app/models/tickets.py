@@ -37,6 +37,7 @@ risk_type_enum = ENUM("low", "medium", "high", name="risk_type",create_type=True
 
 
 class Sales(BaseModel):
+    uuid:Mapped[Optional[str]] = mapped_column(default=None,unique=True)
     id_ticket:Mapped[int] = mapped_column(ForeignKey("ticket.id"))
     ticket:Mapped["Ticket"] = relationship("Ticket",back_populates="sales")
 
@@ -68,6 +69,21 @@ class Sales(BaseModel):
             return None
         
 @event.listens_for(Sales, "before_insert")
+def generate_uuid(mapper, connection, target:Sales):
+
+    session = Session(bind = connection)
+
+    while True:
+        generated_uuid = str(uuid.uuid4())
+
+        exist = session.query(Sales).filter_by(uuid = generate_uuid).first()
+            
+        if not exist:
+            target.uuid = generated_uuid
+            break
+
+        
+@event.listens_for(Sales, "before_insert")
 def calculate_totals(mapper, connection, target:Sales):
 
     session = Session(bind = connection)
@@ -82,6 +98,13 @@ def calculate_totals(mapper, connection, target:Sales):
     target.raw_total = float(raw_total)
     target.total = float(total)
 
+@event.listens_for(Sales, "after_update")
+def calculate_totals_when_update(mapper, connection, target:Sales):
+    raw_total = target.general_price.calculate_raw_total(target.material_quantity, target.print_time, target.risk)
+    total = target.general_price.calculate_total(target.material_quantity, target.print_time, target.discount, target.risk)
+
+    target.raw_total = float(raw_total)
+    target.total = float(total)
 
 class ErrorSale(BaseModel):
     id_sale:Mapped[int] = mapped_column(ForeignKey("sales.id"),unique=True)
@@ -117,8 +140,16 @@ class Ticket(BaseModel):
     
 @event.listens_for(Ticket, "before_insert")
 def generate_uuid(mapper, connection, target:Ticket):
-    generated_uuid = str(uuid.uuid4())
-    target.uuid = generated_uuid
+    session = Session(bind = connection)
+
+    while True:
+        generated_uuid = str(uuid.uuid4())
+
+        exist = session.query(Sales).filter_by(uuid = generate_uuid).first()
+            
+        if not exist:
+            target.uuid = generated_uuid
+            break
 
 
 @event.listens_for(Sales, "after_insert")
