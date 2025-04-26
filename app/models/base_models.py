@@ -20,7 +20,7 @@ from sqlalchemy.sql import func
 class BaseModel(db.Model):
     __abstract__ = True
     
-    id:Mapped[int] = mapped_column(primary_key=True)
+    id:Mapped[int] = mapped_column(primary_key=True,autoincrement=True)
 
     
     def __repr__(self):

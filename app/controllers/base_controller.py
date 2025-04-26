@@ -29,12 +29,10 @@ class BaseController:
         
         json_request = request.get_json()
         version = request.headers.get("Accept")
-        
-        if "id" in json_request:
-            json_request["id"] = None
+        json_request.pop("id",None)
             
         try:
-            new_data = self._model(**{**self._defaults,**json_request})
+            new_data = self._model(**json_request)
             self.session.add(new_data)
             self.session.commit()
             
@@ -48,7 +46,6 @@ class BaseController:
         
         json_request = request.get_json()
         version = request.headers.get("Accept")
-        
         if not id or not isinstance(id,int):
             if "id" in json_request:
                 _id = json_request["id"]
@@ -60,14 +57,12 @@ class BaseController:
                 return Response(response=json.dumps({"message":"id in data and url"}),status=400,mimetype="application/json")
         
         self._defaults["id"] = _id
-        
-        _query = self.session.query(self._model).filter_by(id = _id)
+        _query = self.session.query(self._model).filter_by(id = _id).first()
         
         if not _query:
             return self.__return_json__(_query,version)
         
         new_data = {**self._defaults,**json_request} 
-        
         try:
             for key,value in new_data.items():
                 if hasattr(_query,key):
