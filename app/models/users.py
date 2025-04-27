@@ -36,5 +36,16 @@ class User(BaseUser):
 
     tickets:Mapped[list["Ticket"]] = relationship(back_populates="user",cascade="all, delete-orphan")
 
-    def get_auth_level(self):
-        return self.auth_level
+    def check_auth_level(self,levels):
+        if self.auth_level == "admin":
+            return True
+        
+        auth_level = self.auth_level.lower()
+
+        if isinstance(levels,list):
+            levels_lower = [level.lower() if isinstance(level, str) else level for level in levels]
+            return auth_level in levels_lower
+        elif isinstance(levels,str):
+            return auth_level == levels.lower()
+        
+        return False
