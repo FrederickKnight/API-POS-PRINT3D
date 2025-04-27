@@ -10,12 +10,12 @@ class BaseAuthRoute:
         
     def _create_routes(self):
         
-        @self._blueprint.route("/register",methods=["POST"])
+        @self._blueprint.route("/",methods=["POST"])
         def route_register_user():
             json_request = request.get_json()
             return self._controller.register_user(json_request)
 
-        @self._blueprint.route("/<int:id>/search",methods=["GET"])
+        @self._blueprint.route("/<int:id>",methods=["GET"])
         def route_get_by_id_user(id):
             return self._controller.get_by_id(id)
 
@@ -24,7 +24,7 @@ class BaseAuthRoute:
             json_request = request.get_json()
             return self._controller.validate_user(json_request)
 
-        @self._blueprint.route("/<int:id>/delete",methods=["DELETE"])
+        @self._blueprint.route("/<int:id>",methods=["DELETE"])
         def route_delete_by_id(id):
             return self._controller.delete_user_by_id(id)
 
